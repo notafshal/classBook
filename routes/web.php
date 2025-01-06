@@ -5,8 +5,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ClassroomController;
-
-
+use App\Models\Booking;
 
 Route::get('/profile',function(){
     return inertia::render('Profile');
@@ -40,12 +39,12 @@ Route::middleware(['role:admin'])->group(function () {
 
 
 
-Route::get('/bookings', fn() => Inertia::render('ViewBooking'))->name('bookings');
+
 Route::get('/bookings', [BookingController::class, 'index'])->name('index');
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('create');
 Route::post('/bookings', [BookingController::class, 'store'])->name('store');
-Route::get('/bookings/{id}',fn() => Inertia::render('show'));
-Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('show');
+Route::get('/bookings/{userId}', fn() => Inertia::render('ViewBooking'))->name('show');
+ Route::get('/bookings/{userId}', [BookingController::class, 'show'])->name('show');
 Route::get('/bookings/{id}/edit', [BookingController::class, 'edit'])->name('edit');
 Route::put('/bookings/{id}', [BookingController::class, 'update'])->name('update');
 Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('destroy');

@@ -83,11 +83,7 @@ export default function EditProfile() {
                                 disabled
                             />
                         </Form.Group>
-                        <Button
-                            className="mt-3"
-                            type="submit"
-                            variant="primary"
-                        >
+                        <Button className="mt-3" type="submit" variant="dark">
                             Save Changes
                         </Button>
                         <Button

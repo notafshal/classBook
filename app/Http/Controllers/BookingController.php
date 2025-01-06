@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use Inertia\Inertia;
 
 class BookingController extends Controller
 {
@@ -48,11 +49,25 @@ class BookingController extends Controller
         return response()->json(['message' => 'Booking created successfully', 'data' => $booking], 201);
     }
 
-    public function show($id)
+    
+
+    public function show($userId)
     {
-        $booking = Booking::with(['user', 'room'])->findOrFail($id);
-        return response()->json(['data' => $booking]);
+        $bookings = Booking::with(['user', 'room'])
+                            ->where('user_id', $userId)
+                            ->get();
+    
+        if (request()->wantsJson()) {
+            
+            return response()->json(['bookings' => $bookings]);
+        }
+    
+        
+        return Inertia::render('ViewBooking', [
+            'bookings' => $bookings
+        ]);
     }
+    
 
     public function update(Request $request, $id)
     {
