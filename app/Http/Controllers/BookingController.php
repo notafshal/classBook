@@ -8,18 +8,37 @@ use Inertia\Inertia;
 
 class BookingController extends Controller
 {
-    /**
-     * Display all bookings.
-     */
+
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:pending,approved,cancelled',
+        ]);
+
+        $booking = Booking::find($id);
+
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found'], 404);
+        }
+
+        $booking->status = $request->status;
+        $booking->save();
+
+        return response()->json([
+            'message' => 'Booking status updated successfully',
+            'booking' => $booking,
+        ], 200);
+    }
+
+   
     public function index()
     {
         $bookings = Booking::with(['user', 'room'])->get();
         return response()->json(['data' => $bookings]);
     }
 
-    /**
-     * Store a new booking.
-     */
+    
     public function store(Request $request)
     {
         $validatedData = $request->validate([

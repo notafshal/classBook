@@ -27,18 +27,22 @@ Route::put('/user/{id}', [UserController::class, 'updateUser'])->name('updateUse
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 });
+Route::get('/book-mgmt', function () {
+    return Inertia::render('BookMgmt');
+});
 Route::get('/rooms', [ClassroomController::class, 'index'])->name('index');
 Route::get('/rooms/create', [ClassroomController::class, 'create'])->name('create');
 
 Route::middleware(['role:admin'])->group(function () {  
+    Route::post('/rooms/{id}/block', [ClassroomController::class, 'toggleBlock'])->name('toggleBlock');
+
     Route::post('/rooms', [ClassroomController::class, 'store'])->name('store');
     Route::get('/rooms/{id}/edit', [ClassroomController::class, 'edit'])->name('edit');
     Route::put('/rooms/{id}', [ClassroomController::class, 'update'])->name('update');
     Route::delete('/rooms/{id}', [ClassroomController::class, 'destroy'])->name('destroy');
 });
 
-
-
+Route::put('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
 Route::get('/bookings', [BookingController::class, 'index'])->name('index');
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('create');

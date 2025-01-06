@@ -9,7 +9,19 @@ use Inertia\Inertia;
 
 class ClassroomController extends Controller
 {
- 
+    public function toggleBlock($id)
+    {
+        $room = Room::findOrFail($id);
+    
+        
+        $room->isBlocked = !$room->isBlocked;
+        $room->save();
+    
+        return response()->json([
+            'message' => 'Room block status updated successfully',
+            'isBlocked' => $room->isBlocked
+        ]);
+    }
     public function index()
     {
         $rooms = Room::all();
@@ -49,12 +61,18 @@ public function create()
         return response()->json(['message' => 'Room booked successful'], 201);
     }
    
+
+
     public function edit($id)
     {
         $room = Room::findOrFail($id);
-        return view('rooms.edit', compact('room'));
+        
+      
+        return Inertia::render('EditRoom', [
+            'room' => $room
+        ]);
     }
-
+    
    
     public function update(Request $request, $id)
     {
@@ -63,12 +81,10 @@ public function create()
             'capacity' => 'required|integer|min:1',
             'type' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $room = Room::findOrFail($id);
-    
-        // Only retrieve validated data
         $data = $request->only(['room', 'capacity', 'type', 'location']);
     
         if ($request->hasFile('image')) {

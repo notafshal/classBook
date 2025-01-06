@@ -11,6 +11,7 @@ class Room extends Model
         'capacity',
         'type',
         'location',
-        'image'
+        'image',
+        'isBlocked'
     ];
 }

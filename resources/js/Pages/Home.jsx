@@ -130,12 +130,20 @@ function Home() {
                                                 <strong>Location:</strong>{" "}
                                                 {room.location}
                                             </Card.Text>
-                                            <Button
-                                                variant="dark"
-                                                onClick={() => openModal(room)}
-                                            >
-                                                Book Now
-                                            </Button>
+                                            {room.isBlocked === 1 ? (
+                                                <Button variant="danger">
+                                                    Unavailabe
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="dark"
+                                                    onClick={() =>
+                                                        openModal(room)
+                                                    }
+                                                >
+                                                    Book Now
+                                                </Button>
+                                            )}
                                         </Card.Body>
                                     </Card>
                                 </Col>

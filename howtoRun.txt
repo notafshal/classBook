@@ -1,0 +1,5 @@
+1. Install node php composer mysql
+2.open terminal 
+3. run php artisan migrate 
+4. run php artisan serve on 1 terminal
+5. run npm run dev on another one

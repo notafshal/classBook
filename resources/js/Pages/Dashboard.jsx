@@ -10,6 +10,8 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import NavBar from "../components/Navbar";
+import AdminSidebar from "../components/AdminSidebar";
+import { router } from "@inertiajs/react";
 
 const AdminDashboard = () => {
     const [rooms, setRooms] = useState([]);
@@ -35,8 +37,7 @@ const AdminDashboard = () => {
             setRooms(roomsData);
             setAnalytics({
                 totalRooms: roomsData.length,
-                blockedRooms: roomsData.filter((room) => room.is_blocked)
-                    .length,
+                blockedRooms: roomsData.filter((room) => room.isBlocked).length,
             });
         } catch (error) {
             console.error("Error fetching rooms", error);
@@ -57,12 +58,24 @@ const AdminDashboard = () => {
     };
 
     const handleSubmit = async () => {
+        // Validate form data
+        if (
+            !formData.room ||
+            !formData.capacity ||
+            !formData.type ||
+            !formData.location
+        ) {
+            alert("All fields are required.");
+            return;
+        }
+
         const form = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
-            form.append(key, value);
+            if (value !== null && value !== undefined) {
+                form.append(key, value);
+            }
         });
 
-        console.log(currentRoom);
         try {
             if (currentRoom) {
                 await axios.put(
@@ -100,162 +113,200 @@ const AdminDashboard = () => {
         }
     };
 
+    const addRoom = () => {
+        setCurrentRoom("");
+        setShowModal(true);
+    };
+
     return (
         <>
             <NavBar />
-            <Container>
-                <Row className="my-4">
-                    <Col>
-                        <h2>Admin Dashboard</h2>
-                    </Col>
-                    <Col className="text-end">
-                        <Button
-                            className="btn-dark"
-                            onClick={() => setShowModal(true)}
-                        >
-                            Add Room
-                        </Button>
-                    </Col>
-                </Row>
-                <Row className="mb-4">
-                    <Col>
-                        <h5>Total Rooms: {analytics.totalRooms}</h5>
-                        <h5>Blocked Rooms: {analytics.blockedRooms}</h5>
-                    </Col>
-                </Row>
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Room</th>
-                            <th>Capacity</th>
-                            <th>Type</th>
-                            <th>Location</th>
-                            <th>Image</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rooms.map((room, index) => (
-                            <tr key={room.id}>
-                                <td>{index + 1}</td>
-                                <td>{room.room}</td>
-                                <td>{room.capacity}</td>
-                                <td>{room.type}</td>
-                                <td>{room.location}</td>
-                                <td>
-                                    {room.image && (
-                                        <img
-                                            src={`/storage/${room.image}`}
-                                            alt={room.room}
-                                            style={{
-                                                width: "50px",
-                                                height: "50px",
-                                            }}
-                                        />
-                                    )}
-                                </td>
-                                <td>
-                                    <Button
-                                        variant="warning"
-                                        onClick={() => {
-                                            setCurrentRoom(room);
-                                            setFormData(room);
-                                            setShowModal(true);
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>{" "}
-                                    <Button
-                                        variant="danger"
-                                        onClick={() => handleDelete(room.id)}
-                                    >
-                                        Delete
-                                    </Button>{" "}
-                                    <Button
-                                        variant={
-                                            room.is_blocked
-                                                ? "secondary"
-                                                : "primary"
-                                        }
-                                        onClick={() =>
-                                            handleBlockToggle(room.id)
-                                        }
-                                    >
-                                        {room.is_blocked ? "Unblock" : "Block"}
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+            <div className="d-flex">
+                <div style={{ width: "15%", minWidth: "200px" }}>
+                    <AdminSidebar />
+                </div>
+                <div style={{ width: "85%" }} className="flex-grow-1 p-4">
+                    <Container>
+                        <Row className="my-4">
+                            <Col>
+                                <h2>Room Management</h2>
+                            </Col>
+                            <Col className="text-end">
+                                <Button className="btn-dark" onClick={addRoom}>
+                                    Add Room
+                                </Button>
+                            </Col>
+                        </Row>
+                        <Row className="mb-4">
+                            <Col>
+                                <h5>Total Rooms: {analytics.totalRooms}</h5>
+                                <h5>Blocked Rooms: {analytics.blockedRooms}</h5>
+                            </Col>
+                        </Row>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Room</th>
+                                    <th>Capacity</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Image</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rooms.map((room, index) => (
+                                    <tr key={room.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{room.room}</td>
+                                        <td>{room.capacity}</td>
+                                        <td>{room.type}</td>
+                                        <td>{room.location}</td>
+                                        <td>
+                                            {room.image && (
+                                                <img
+                                                    src={`/storage/${room.image}`}
+                                                    alt={room.room}
+                                                    style={{
+                                                        width: "50px",
+                                                        height: "50px",
+                                                    }}
+                                                />
+                                            )}
+                                        </td>
+                                        <td>
+                                            <Button
+                                                variant="warning"
+                                                onClick={() => {
+                                                    router.get(
+                                                        `/rooms/${room.id}/edit`
+                                                    );
+                                                }}
+                                            >
+                                                Edit
+                                            </Button>{" "}
+                                            <Button
+                                                variant="danger"
+                                                onClick={() =>
+                                                    handleDelete(room.id)
+                                                }
+                                            >
+                                                Delete
+                                            </Button>{" "}
+                                            <Button
+                                                variant={
+                                                    room.isBlocked
+                                                        ? "secondary"
+                                                        : "primary"
+                                                }
+                                                onClick={() =>
+                                                    handleBlockToggle(room.id)
+                                                }
+                                            >
+                                                {room.isBlocked
+                                                    ? "Unblock"
+                                                    : "Block"}
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
 
-                <Modal show={showModal} onHide={() => setShowModal(false)}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>
-                            {currentRoom ? "Edit Room" : "Add Room"}
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form>
-                            <Form.Group>
-                                <Form.Label>Room Name</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="room"
-                                    value={formData.room}
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Capacity</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    name="capacity"
-                                    value={formData.capacity}
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Type</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Location</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="location"
-                                    value={formData.location}
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Image</Form.Label>
-                                <Form.Control
-                                    type="file"
-                                    onChange={handleImageChange}
-                                />
-                            </Form.Group>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={() => setShowModal(false)}
+                        <Modal
+                            show={showModal}
+                            onHide={() => setShowModal(false)}
                         >
-                            Close
-                        </Button>
-                        <Button variant="dark" onClick={handleSubmit}>
-                            Save
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </Container>
+                            <Modal.Header closeButton>
+                                <Modal.Title>
+                                    {currentRoom ? "Edit Room" : "Add Room"}
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Label>Room Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="room"
+                                            value={formData.room}
+                                            onChange={handleInputChange}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Capacity</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="capacity"
+                                            value={formData.capacity}
+                                            onChange={handleInputChange}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Type</Form.Label>
+                                        <Form.Select
+                                            name="type"
+                                            value={formData.type}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">
+                                                Select a Type
+                                            </option>
+                                            <option value="Class">Class</option>
+                                            <option value="Hall">Hall</option>
+                                            <option value="Canteen">
+                                                Canteen
+                                            </option>
+                                            <option value="Labs">Labs</option>
+                                        </Form.Select>
+                                    </Form.Group>
+
+                                    <Form.Group>
+                                        <Form.Label>Location</Form.Label>
+                                        <Form.Select
+                                            name="location"
+                                            value={formData.location}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">
+                                                Select a Building
+                                            </option>
+                                            <option value="Building A">
+                                                Building A
+                                            </option>
+                                            <option value="Building B">
+                                                Building B
+                                            </option>
+                                            <option value="Building C">
+                                                Building C
+                                            </option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Image</Form.Label>
+                                        <Form.Control
+                                            type="file"
+                                            onChange={handleImageChange}
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setShowModal(false)}
+                                >
+                                    Close
+                                </Button>
+                                <Button variant="dark" onClick={handleSubmit}>
+                                    Save
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    </Container>
+                </div>
+            </div>
         </>
     );
 };

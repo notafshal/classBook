@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Booking extends Model
 {
-    // Define which fields are mass assignable
+   
     protected $fillable = [
         'date',
         'time',
@@ -18,14 +18,12 @@ class Booking extends Model
         'room_id',
     ];
 
-
-    // Relationship with the User model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relationship with the Room model
+   
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');
