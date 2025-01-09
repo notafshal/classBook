@@ -58,7 +58,6 @@ const AdminDashboard = () => {
     };
 
     const handleSubmit = async () => {
-        // Validate form data
         if (
             !formData.room ||
             !formData.capacity ||

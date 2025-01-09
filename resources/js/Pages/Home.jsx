@@ -190,7 +190,6 @@ function Home() {
                                 name="time"
                                 value={formData.time}
                                 onChange={handleInputChange}
-                                required
                             />
                             <Form.Text className="text-muted">
                                 Please enter time in HH:mm:ss format.

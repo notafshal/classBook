@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('type'); 
             $table->string('location'); 
             $table->boolean('isBlocked'); 
+            $table->string('photo'); 
             $table->timestamps();
         });
     }

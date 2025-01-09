@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import NavBar from "../components/Navbar";
 import axios from "axios";
@@ -30,24 +30,26 @@ const EditRoom = ({ room }) => {
         setErrors({});
         setSuccess("");
 
-        const data = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                data.append(key, value);
-            }
-        });
-        console.log(data);
+        // const data = new FormData();
+        // Object.entries(formData).forEach(([key, value]) => {
+        //     console.log(key);
+        //     console.log(value);
+        //     data.append(
+        //         key,
+        //         value !== null && value !== undefined ? value : ""
+        //     );
+        // });
+
         try {
-            const response = await axios.put(`/rooms/${room.id}`, data, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            setSuccess("Room updated successfully!");
-            Inertia.visit("/rooms");
+            const response = await axios.put(`/rooms/${room.id}`, formData);
+            setSuccess("Room updated successfully!", response);
+            router.get("/dashboard");
         } catch (error) {
-            if (error.response && error.response.data.errors) {
-                setErrors(error.response.data.errors);
+            if (error.response) {
+                console.error("Error response:", error.response.data);
+                setErrors(error.response.data.errors || {});
             } else {
-                console.error("Error updating room:", error);
+                console.error("Unexpected error:", error);
             }
         }
     };
@@ -120,7 +122,7 @@ const EditRoom = ({ room }) => {
                             {errors.location}
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group>
+                    {/* <Form.Group>
                         <Form.Label>Image</Form.Label>
                         <Form.Control
                             type="file"
@@ -130,7 +132,7 @@ const EditRoom = ({ room }) => {
                         <Form.Control.Feedback type="invalid">
                             {errors.image}
                         </Form.Control.Feedback>
-                    </Form.Group>
+                    </Form.Group> */}
                     <Button variant="dark" type="submit">
                         Save
                     </Button>
