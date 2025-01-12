@@ -44,11 +44,11 @@ Route::middleware(['role:admin'])->group(function () {
 
 Route::put('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
-Route::get('/bookings', [BookingController::class, 'index'])->name('index');
-Route::get('/bookings/create', [BookingController::class, 'create'])->name('create');
-Route::post('/bookings', [BookingController::class, 'store'])->name('store');
-Route::get('/bookings/{userId}', fn() => Inertia::render('ViewBooking'))->name('show');
- Route::get('/bookings/{userId}', [BookingController::class, 'show'])->name('show');
-Route::get('/bookings/{id}/edit', [BookingController::class, 'edit'])->name('edit');
-Route::put('/bookings/{id}', [BookingController::class, 'update'])->name('update');
-Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('destroy');
+Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+Route::get('/bookings/{userId}', fn() => Inertia::render('ViewBooking'))->name('bookings.show');
+ Route::get('/bookings/{userId}', [BookingController::class, 'show'])->name('bookings.show');
+Route::get('/bookings/{id}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+Route::put('/bookings/{id}', [BookingController::class, 'update'])->name('bookings.update');
+Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('bookings.destroy');

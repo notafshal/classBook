@@ -28,7 +28,7 @@ class BookingControllerTest extends TestCase
             'purpose' => 'Meeting',
         ];
 
-        $response = $this->postJson('/api/bookings', $payload);
+        $response = $this->postJson('/bookings', $payload);
 
         $response->assertStatus(201)
                  ->assertJson(['message' => 'Booking created successfully']);
@@ -47,7 +47,7 @@ class BookingControllerTest extends TestCase
             'status' => 'approved',
         ];
 
-        $response = $this->putJson("/api/bookings/{$booking->id}", $payload);
+        $response = $this->putJson("/bookings/{$booking->id}", $payload);
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Booking updated successfully']);
@@ -69,7 +69,7 @@ class BookingControllerTest extends TestCase
             'status' => 'approved',
         ];
 
-        $response = $this->putJson("/api/bookings/{$booking->id}/status", $payload);
+        $response = $this->putJson("/bookings/{$booking->id}/status", $payload);
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Booking status updated successfully']);
@@ -85,7 +85,7 @@ class BookingControllerTest extends TestCase
     {
         $booking = Booking::factory()->create();
 
-        $response = $this->deleteJson("/api/bookings/{$booking->id}");
+        $response = $this->deleteJson("/bookings/{$booking->id}");
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Booking deleted successfully']);
@@ -103,7 +103,7 @@ class BookingControllerTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->getJson("/api/bookings/user/{$user->id}");
+        $response = $this->getJson("/bookings/user/{$user->id}");
 
         $response->assertStatus(200)
                  ->assertJsonCount(3, 'bookings');
@@ -135,7 +135,7 @@ class BookingControllerTest extends TestCase
             'duration' => 2,
         ];
 
-        $response = $this->putJson("/api/bookings/{$bookingToUpdate->id}", $payload);
+        $response = $this->putJson("/bookings/{$bookingToUpdate->id}", $payload);
 
         $response->assertStatus(422)
                  ->assertJson(['message' => 'Room is already booked for the selected time period']);

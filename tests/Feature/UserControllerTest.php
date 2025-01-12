@@ -21,7 +21,7 @@ class UserControllerTest extends TestCase
             'role' => 'student',
         ];
 
-        $response = $this->postJson('register', $payload);
+        $response = $this->postJson('/register', $payload);
 
         $response->assertStatus(201)
                  ->assertJson(['message' => 'Registration successful']);
