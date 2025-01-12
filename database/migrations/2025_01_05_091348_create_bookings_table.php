@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); 
             $table->unsignedBigInteger('room_id');
-            $table->timestamp('start_time'); 
-            $table->timestamp('end_time'); 
+            $table->timestamp('date'); 
+            $table->timestamp('time'); 
+            $table->integer('duration'); 
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); 
+            $table->string('purpose'); 
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
