@@ -52,9 +52,51 @@ function Home() {
         }
         setFormData({ ...formData, [name]: updatedValue });
     };
+    const checkAvailability = async () => {
+        try {
+            const response = await axios.post(
+                `http://localhost:8000/bookings/check-availability`,
+                {
+                    room_id: selectedRoom.id,
+                    date: formData.date,
+                    time: formData.time,
+                    duration: formData.duration,
+                }
+            );
+
+            return true;
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                setBookingStatus({
+                    success: false,
+                    message: error.response.data.message,
+                });
+            } else {
+                setBookingStatus({
+                    success: false,
+                    message: "Failed to check room availability.",
+                });
+            }
+            setShowToast(true);
+            return false;
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log({
+            room_id: selectedRoom.id,
+            date: formData.date,
+            time: formData.time,
+            duration: formData.duration,
+        });
+        setBookingStatus({ success: false, message: "" });
+
+        const isAvailable = await checkAvailability();
+        if (!isAvailable) {
+            return;
+        }
+
         try {
             const userId = localStorage.getItem("userId");
             const response = await axios.post(
@@ -66,16 +108,22 @@ function Home() {
                     ...formData,
                 }
             );
-            setBookingStatus({ success: true, message: "Booking successful!" });
+
+            setBookingStatus({
+                success: true,
+                message: "Booking successful!",
+            });
             setShowToast(true);
             setShowModal(false);
+
+            fetchRooms();
         } catch (error) {
             setBookingStatus({
                 success: false,
                 message:
                     error.response?.data?.message || "Failed to book the room.",
             });
-            console.error("Booking error:", error);
+            setShowToast(true);
         }
     };
 
@@ -185,16 +233,17 @@ function Home() {
                         <Form.Group controlId="time">
                             <Form.Label>Booking Time</Form.Label>
                             <Form.Control
-                                type="text"
-                                placeholder="HH:mm:ss"
+                                type="time"
                                 name="time"
                                 value={formData.time}
                                 onChange={handleInputChange}
+                                step="1"
                             />
                             <Form.Text className="text-muted">
-                                Please enter time in HH:mm:ss format.
+                                Please select a time in HH:mm:ss format.
                             </Form.Text>
                         </Form.Group>
+
                         <Form.Group controlId="duration">
                             <Form.Label>Duration (Hours)</Form.Label>
                             <Form.Control
@@ -235,13 +284,14 @@ function Home() {
                     onClose={() => setShowToast(false)}
                     delay={3000}
                     autohide
+                    bg={bookingStatus.success ? "success" : "danger"}
                 >
                     <Toast.Header>
                         <strong className="me-auto">
                             Booking Notification
                         </strong>
                     </Toast.Header>
-                    <Toast.Body>Booking successful!</Toast.Body>
+                    <Toast.Body>{bookingStatus.message}</Toast.Body>{" "}
                 </Toast>
             </ToastContainer>
         </>

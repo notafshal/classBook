@@ -45,6 +45,7 @@ Route::middleware(['role:admin'])->group(function () {
 Route::put('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
 Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+Route::post('/bookings/check-availability', [BookingController::class, 'checkAvailability']);
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 Route::get('/bookings/{userId}', fn() => Inertia::render('ViewBooking'))->name('bookings.show');

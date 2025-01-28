@@ -135,4 +135,32 @@ class BookingController extends Controller
 
         return response()->json(['message' => 'Booking deleted successfully']);
     }
+
+    public function checkAvailability(Request $request)
+{
+    $validatedData = $request->validate([
+        'room_id' => 'required|exists:rooms,id',
+        'date' => 'required|date',
+        'time' => 'required|date_format:H:i:s',
+        'duration' => 'required|integer|min:1',
+    ]);
+
+    $startDateTime = new \DateTime($validatedData['date'] . ' ' . $validatedData['time']);
+    $endDateTime = (clone $startDateTime)->modify('+' . $validatedData['duration'] . ' hours');
+
+    $conflictingBookings = Booking::where('room_id', $validatedData['room_id'])
+        ->where('date', $validatedData['date'])
+        ->where(function ($query) use ($startDateTime, $endDateTime) {
+            $query->whereBetween('time', [$startDateTime, $endDateTime])
+                ->orWhereRaw('? BETWEEN time AND ADDTIME(time, SEC_TO_TIME(duration * 3600))', [$startDateTime]);
+        })
+        ->exists();
+
+    if ($conflictingBookings) {
+        return response()->json(['message' => 'Room is not available for the selected time'], 409);
+    }
+
+    return response()->json(['message' => 'Room is available']);
+}
+
 }
