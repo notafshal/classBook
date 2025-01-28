@@ -11,7 +11,7 @@ use Inertia\Inertia;
 class ClassroomController extends Controller
 {
     public function toggleBlock($id)
-    {
+    { 
         $room = Room::findOrFail($id);
     
         
@@ -38,7 +38,6 @@ public function create()
 {
     return Inertia::render('Rooms/Create');
 }
-
 
     
     public function store(Request $request)

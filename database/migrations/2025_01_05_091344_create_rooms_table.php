@@ -17,8 +17,8 @@ return new class extends Migration
             $table->integer('capacity'); 
             $table->string('type'); 
             $table->string('location'); 
-            $table->boolean('isBlocked'); 
-            $table->string('image'); 
+            $table->boolean('isBlocked')->default(0); 
+            $table->string('image')->nullable(); 
             $table->timestamps();
         });
     }
