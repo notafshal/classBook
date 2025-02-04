@@ -16,19 +16,19 @@ class ClassroomControllerTest extends TestCase
     /** @test */
     public function it_can_toggle_room_block_status()
     {
-        // Create an admin user and authenticate
+        
         $admin = User::factory()->create([
             'role' => 'admin',
         ]);
         $this->actingAs($admin);
 
-        // Create a room
+       
         $room = Room::factory()->create(['isBlocked' => false]);
 
-        // Make the request as the authenticated admin
+      
         $response = $this->json('POST', route('toggleBlock', $room->id));
 
-        // Assertions
+        
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Room block status updated successfully']);
 
@@ -52,7 +52,7 @@ class ClassroomControllerTest extends TestCase
     Storage::fake('public');
     $image = UploadedFile::fake()->image('room.jpg');
     $this->withoutMiddleware();
-    // Create and authenticate a user
+    
     $admin = User::factory()->create(['role' => 'admin']); 
 $this->actingAs($admin);
     $roomData = [
@@ -65,7 +65,7 @@ $this->actingAs($admin);
 
     $response = $this->postJson(route('store'), $roomData);
 
-    // Debugging: Dump the response if test fails
+    
     $response->dump();
 
     $response->assertStatus(201)
