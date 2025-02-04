@@ -12,7 +12,7 @@ use App\Models\User;
 class ClassroomControllerTest extends TestCase
 {
     use RefreshDatabase;
-
+ 
     /** @test */
     public function it_can_toggle_room_block_status()
     {

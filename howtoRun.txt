@@ -308,5 +308,6 @@ Install JavaScript and CSS Dependencies:
     Open a web browser and go to http://127.0.0.1:8000 to view the application.
 
 How to run test
+check .env.testing file 
  run php artisan test to test all the tests.
  run "php artisan test=UserControllerTest" for userController test

@@ -10,6 +10,57 @@ use Illuminate\Support\Facades\Hash;
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
+    public function test_login_performance()
+    {
+        $user = User::factory()->create([
+            'name' => 'testuser',
+            'email' => 'testuser@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $loginData = [
+            'loginname' => 'testuser',
+            'loginpassword' => 'password123',
+        ];
+
+        $start = microtime(true);
+
+        $response = $this->postJson('/login', $loginData);
+
+        $end = microtime(true);
+        $executionTime = $end - $start;
+
+        // You can set a threshold for how long it should take
+        $this->assertLessThan(3, $executionTime);  // Make sure the login completes in less than 2 seconds
+        
+        $response->assertStatus(200);
+        $response->assertJson([
+            'message' => 'Login successful',
+        ]);
+    }
+    public function test_register_performance()
+{
+    $registerData = [
+        'name' => 'newuser',
+        'email' => 'newuser@example.com',
+        'password' => 'password123',
+        'role' => 'student',
+    ];
+
+    $start = microtime(true);
+
+    $response = $this->postJson('/register', $registerData);
+
+    $end = microtime(true);
+    $executionTime = $end - $start;
+
+    $this->assertLessThan(2, $executionTime);  // Registration should complete in less than 2 seconds
+
+    $response->assertStatus(201);
+    $response->assertJson([
+        'message' => 'Registration successful',
+    ]);
+}
 
     /** @test */
     public function it_registers_a_user()
