@@ -95,7 +95,7 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->getJson("/users/{$user->id}");
+        $response = $this->getJson("/user/{$user->id}");
 
         $response->assertStatus(200)
         ->assertJsonPath('message', 'User retrieved successfully')
@@ -120,7 +120,7 @@ class UserControllerTest extends TestCase
             'role' => 'admin',
         ];
 
-        $response = $this->putJson("/users/{$user->id}", $payload);
+        $response = $this->putJson("/user/{$user->id}", $payload);
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'User updated successfully']);
