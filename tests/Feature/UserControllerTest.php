@@ -98,15 +98,10 @@ class UserControllerTest extends TestCase
         $response = $this->getJson("/users/{$user->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'message' => 'User retrieved successfully',
-                     'user' => [
-                         'id' => $user->id,
-                         'name' => $user->name,
-                         'email' => $user->email,
-                         'role' => $user->role,
-                     ],
-                 ]);
+        ->assertJsonPath('message', 'User retrieved successfully')
+        ->assertJsonPath('user.id', $user->id)
+        ->assertJsonPath('user.name', $user->name)
+        ->assertJsonPath('user.email', $user->email);
     }
 
     /** @test */

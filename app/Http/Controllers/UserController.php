@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -66,25 +67,33 @@ class UserController extends Controller
     ], 200);
 }
 
-    public function updateUser(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-    
-        $incomingFields = $request->validate([
-            'name' => ['required', 'min:3', 'max:10', Rule::unique('users', 'name')->ignore($id)],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
-            'password' => ['nullable', 'min:3', 'max:20'],
-            'role' => ['required', Rule::in(['student', 'staff', 'admin'])],
-        ]);
-    
-        if ($request->filled('password')) {
-            $incomingFields['password'] = bcrypt($incomingFields['password']);
-        } else {
-            unset($incomingFields['password']);
-        }
-    
-        $user->update($incomingFields);
-    
-        return response()->json(['message' => 'User updated successfully'], 200);
+public function updateUser(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    $incomingFields = $request->validate([
+        'name' => ['required', 'min:3', 'max:10', Rule::unique('users', 'name')->ignore($id)],
+        'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
+        'password' => ['nullable', 'min:3', 'max:20'],
+        'role' => ['required', Rule::in(['student', 'staff', 'admin'])],
+    ]);
+
+    if ($request->filled('password')) {
+        $incomingFields['password'] = Hash::make($incomingFields['password']);
+    } else {
+        unset($incomingFields['password']);
     }
+
+    $user->update($incomingFields);
+
+    return response()->json([
+        'message' => 'User updated successfully',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+        ],
+    ], 200);
+}
 }
