@@ -311,3 +311,12 @@ How to run test
 check .env.testing file 
  run php artisan test to test all the tests.
  run "php artisan test=UserControllerTest" for userController test
+
+
+
+ how to run UI testing 
+ 1. Use test_db with an existing user.
+2.run npx cypress open - you will see a new window open in your screen 
+3. click on e2e testing and then select the files you want to run tests.
+
+Before running check cypress/e2e/register.cy.js here i have shown how to change the user credentials to test according to the credentials that you provide.
